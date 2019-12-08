@@ -6,11 +6,11 @@
  *	 Institute: ETH Zurich, ANYbotics
  */
 
-#include "grid_map_core/GridMap.hpp"
-#include "grid_map_core/iterators/GridMapIterator.hpp"
-#include "grid_map_core/gtest_eigen.hpp"
-#include "grid_map_ros/GridMapRosConverter.hpp"
-#include "grid_map_msgs/GridMap.h"
+#include <grid_map_core/GridMap.hpp>
+#include <grid_map_core/iterators/GridMapIterator.hpp>
+#include <grid_map_core/gtest_eigen.hpp>
+#include <grid_map_ros/GridMapRosConverter.hpp>
+#include <grid_map_msgs/msg/grid_map.hpp>
 
 // gtest
 #include <gtest/gtest.h>
@@ -25,9 +25,9 @@
 #include <iterator>
 
 // ROS
-#include <nav_msgs/OccupancyGrid.h>
+#include <nav_msgs/msg/occupancy_grid.hpp>
 #include <cv_bridge/cv_bridge.h>
-#include <sensor_msgs/image_encodings.h>
+#include <sensor_msgs/image_encodings.hpp>
 
 using namespace std;
 using namespace grid_map;
@@ -38,7 +38,7 @@ TEST(RosMessageConversion, roundTrip)
   mapIn.setGeometry(Length(2.0, 3.0), 0.5, Position(1.0, 1.5));
   mapIn["layer"].setRandom();
 
-  grid_map_msgs::GridMap message;
+  grid_map_msgs::msg::GridMap message;
   GridMapRosConverter::toMessage(mapIn, message);
   GridMap mapOut;
   GridMapRosConverter::fromMessage(message, mapOut);
@@ -99,9 +99,9 @@ TEST(RosbagHandling, saveLoadWithTime)
 
   EXPECT_FALSE(gridMapOut.exists(layer));
 
-  if (!ros::Time::isValid()) ros::Time::init();
+  rclcpp::Clock clock;
   // TODO Do other time than now.
-  gridMapIn.setTimestamp(ros::Time::now().toNSec());
+  gridMapIn.setTimestamp(clock.now().nanoseconds());
 
   EXPECT_TRUE(GridMapRosConverter::saveToBag(gridMapIn, pathToBag, topic));
   EXPECT_TRUE(GridMapRosConverter::loadFromBag(pathToBag, topic, gridMapOut));
@@ -120,7 +120,7 @@ TEST(OccupancyGridConversion, withMove)
   map.add("layer", 1.0);
 
   // Convert to OccupancyGrid msg.
-  nav_msgs::OccupancyGrid occupancyGrid;
+  nav_msgs::msg::OccupancyGrid occupancyGrid;
   GridMapRosConverter::toOccupancyGrid(map, "layer", 0.0, 1.0, occupancyGrid);
 
   // Expect the (0, 0) cell to have value 100.
@@ -130,7 +130,7 @@ TEST(OccupancyGridConversion, withMove)
   map.move(grid_map::Position(-1.0, -1.0));
 
   // Convert again to OccupancyGrid msg.
-  nav_msgs::OccupancyGrid occupancyGridNew;
+  nav_msgs::msg::OccupancyGrid occupancyGridNew;
   GridMapRosConverter::toOccupancyGrid(map, "layer", 0.0, 1.0, occupancyGridNew);
 
   // Now the (0, 0) cell should be unobserved (-1).
@@ -140,8 +140,8 @@ TEST(OccupancyGridConversion, withMove)
 TEST(OccupancyGridConversion, roundTrip)
 {
   // Create occupancy grid.
-  nav_msgs::OccupancyGrid occupancyGrid;
-  occupancyGrid.header.stamp = ros::Time(5.0);
+  nav_msgs::msg::OccupancyGrid occupancyGrid;
+  occupancyGrid.header.stamp = rclcpp::Time(5.0);
   occupancyGrid.header.frame_id = "map";
   occupancyGrid.info.resolution = 0.1;
   occupancyGrid.info.width = 50;
@@ -160,7 +160,7 @@ TEST(OccupancyGridConversion, roundTrip)
   GridMapRosConverter::fromOccupancyGrid(occupancyGrid, "layer", gridMap);
 
   // Convert back to occupancy grid.
-  nav_msgs::OccupancyGrid occupancyGridResult;
+  nav_msgs::msg::OccupancyGrid occupancyGridResult;
   GridMapRosConverter::toOccupancyGrid(gridMap, "layer", -1.0, 100.0, occupancyGridResult);
 
   // Check map info.
@@ -193,7 +193,7 @@ TEST(ImageConversion, roundTripBGRA8)
   const float maxValue = 1.0;
 
   // Convert to image message.
-  sensor_msgs::Image image;
+  sensor_msgs::msg::Image image;
   GridMapRosConverter::toImage(mapIn, "layer", sensor_msgs::image_encodings::BGRA8, minValue,
                                maxValue, image);
 
@@ -219,7 +219,7 @@ TEST(ImageConversion, roundTripMONO16)
   const float maxValue = 1.0;
 
   // Convert to image message.
-  sensor_msgs::Image image;
+  sensor_msgs::msg::Image image;
   GridMapRosConverter::toImage(mapIn, "layer", sensor_msgs::image_encodings::MONO16,
                                minValue, maxValue, image);
 
