@@ -1,5 +1,27 @@
 # Grid Map
 
+## ROS2 Status
+### Ported
+- `grid_map_core`
+- `grid_map_msgs`
+
+### Semi-ported 
+Sub-bullets are features that remain to be ported
+- `grid_map_cv`
+  - `InpaintFilter` plugin
+
+### Not started
+- `grid_map_costmap_2d`
+- `grid_map_demos`
+- `grid_map_filters`
+- `grid_map_loader`
+- `grid_map_octomap`
+- `grid_map_pcl`
+- `grid_map_ros`
+- `grid_map_rviz_plugin`
+- `grid_map_sdf`
+- `grid_map_visualization`
+
 ## Overview
 
 This is a C++ library with [ROS] interface to manage two-dimensional grid maps with multiple data layers. It is designed for mobile robotic mapping to store data such as elevation, variance, color, friction coefficient, foothold quality, surface normal, traversability etc. It is used in the [Robot-Centric Elevation Mapping](https://github.com/anybotics/elevation_mapping) package designed for rough terrain navigation.
@@ -349,7 +371,7 @@ The published topics are configured with the [YAML parameter file](grid_map_demo
 
 ### grid_map_filters
 
-The *grid_map_filters* package containts several filters which can be applied a grid map to perform computations on the data in the layers. The grid map filters are based on [ROS Filters], which means that a chain of filters can be configured as a YAML file. Furthermore, additional filters can be written and made available through the ROS plugin mechanism, such as the [`InpaintFilter`](grid_map_cv/include/grid_map_cv/InpaintFilter.hpp) from the `grid_map_cv` package.
+The *grid_map_filters* package containts several filters which can be applied a grid map to perform computations on the data in the layers. The grid map filters are based on [ROS Filters], which means that a chain of filters can be configured as a YAML file. Furthermore, additional filters can be written and made available through the ROS plugin mechanism, such as the [`InpaintFilter`](grid_map_cv/include/grid_map_cv_unported/InpaintFilter.hpp) from the `grid_map_cv` package.
 
 Several basic filters are provided in the *grid_map_filters* package:
 
