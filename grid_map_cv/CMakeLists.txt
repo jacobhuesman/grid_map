@@ -1,107 +1,103 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(grid_map_cv)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+# Default to C99
+if(NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 99)
+endif()
 
-## Find catkin macros and libraries
-find_package(catkin REQUIRED COMPONENTS
-  grid_map_core
-  cv_bridge
-  filters
-)
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+find_package(ament_cmake REQUIRED)
+find_package(grid_map_core REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(Eigen3 REQUIRED)
+#find_package(filters REQUIRED) TODO
 
 find_package(OpenCV REQUIRED
   COMPONENTS
   opencv_photo
 )
 
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if you package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-  INCLUDE_DIRS
-    include
-  LIBRARIES
-    ${PROJECT_NAME}
-  CATKIN_DEPENDS
-    grid_map_core
-    cv_bridge
-    filters
-  DEPENDS
-    OpenCV
-)
-
 ###########
 ## Build ##
 ###########
 
-## Specify additional locations of header files
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIR}
-)
-
 ## Declare a cpp library
 add_library(${PROJECT_NAME}
   src/GridMapCvProcessing.cpp
-  src/InpaintFilter.cpp
+  #src/InpaintFilter.cpp TODO
+)
+
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
+  Eigen3::Eigen
 )
 
-add_dependencies(${PROJECT_NAME}
-  ${catkin_EXPORTED_TARGETS}
+ament_target_dependencies(${PROJECT_NAME}
+  grid_map_core
+  cv_bridge
 )
 
 #############
 ## Install ##
 #############
 
+# Export dependencies
+ament_export_interfaces(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+#ament_export_dependencies(some_dependency)
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
+
 # Mark executables and/or libraries for installation
 install(
   TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  EXPORT export_${PROJECT_NAME}
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
 )
 
 # Mark cpp header files for installation
 install(
-  DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.hpp"
+  DIRECTORY include/
+  DESTINATION include
 )
 
+# TODO reintegrate filter plugins
 # Mark other files for installation.
-install(
-  FILES filter_plugins.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
+#install(
+#  FILES filter_plugins.xml
+#  DESTINATION share
+#)
 
 #############
 ## Testing ##
 #############
 
-if(CATKIN_ENABLE_TESTING)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test
-  test/test_grid_map_cv.cpp
-  test/GridMapCvTest.cpp
-  test/GridMapCvProcessingTest.cpp)
-endif()
-
-if(TARGET ${PROJECT_NAME}-test)
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+  ## Add gtest based cpp test target and link libraries
+  ament_add_gtest(${PROJECT_NAME}-test
+    test/test_grid_map_cv.cpp
+    test/GridMapCvTest.cpp
+    test/GridMapCvProcessingTest.cpp)
   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 endif()
 
+ament_package()

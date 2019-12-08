@@ -1,57 +1,54 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(grid_map_msgs)
 
-## Find catkin macros and libraries
-find_package(catkin REQUIRED COMPONENTS
-  std_msgs
-  geometry_msgs
-  message_generation
-)
+# Default to C99
+if(NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 99)
+endif()
+
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+find_package(builtin_interfaces REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 #######################################
 ## Declare ROS messages and services ##
 #######################################
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  GridMapInfo.msg
-  GridMap.msg
+set(msg_files
+  "msg/GridMapInfo.msg"
+  "msg/GridMap.msg"
 )
 
 ## Generate services in the 'srv' folder
-add_service_files(
-  FILES
-  SetGridMap.srv
-  GetGridMap.srv
-  GetGridMapInfo.srv
-  ProcessFile.srv
+set(srv_files
+  "srv/SetGridMap.srv"
+  "srv/GetGridMap.srv"
+  "srv/GetGridMapInfo.srv"
+  "srv/ProcessFile.srv"
 )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_files}
+  ${srv_files}
   DEPENDENCIES
-  std_msgs
-  geometry_msgs
+    builtin_interfaces
+    std_msgs
+    geometry_msgs
 )
 
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if you package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
+ament_export_dependencies(rosidl_default_runtime)
 
-catkin_package(
-    #INCLUDE_DIRS include
-    #LIBRARIES
-    CATKIN_DEPENDS
-        geometry_msgs
-        message_runtime
-        std_msgs
-    #DEPENDS
-)
-
+ament_package()

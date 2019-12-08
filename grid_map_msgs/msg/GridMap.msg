@@ -1,5 +1,5 @@
 # Grid map header
-GridMapInfo info
+grid_map_msgs/GridMapInfo info
 
 # Grid map layer names.
 string[] layers

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>grid_map_core</name>
   <version>1.6.2</version>
   <description>Universal grid map library to manage two-dimensional grid maps with multiple data layers.</description>
@@ -8,6 +8,14 @@
   <url type="website">http://github.com/anybotics/grid_map</url>
   <url type="bugtracker">http://github.com/anybotics/grid_map/issues</url>
   <author email="pfankhauser@anybotics.com">Péter Fankhauser</author>
-  <buildtool_depend>catkin</buildtool_depend>
-  <depend>eigen</depend>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

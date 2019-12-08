@@ -33,5 +33,9 @@
 .settings
 *.pydevproject
 
+# CLion
+.idea/
+cmake-build-*/
+
 # OS X
 .DS_Store
