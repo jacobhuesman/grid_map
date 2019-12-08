@@ -91,12 +91,12 @@ if(BUILD_TESTING)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
   # TODO add these back
   ## Add gtest based cpp test target and link libraries
-  #ament_add_gtest(${PROJECT_NAME}-test
-  #  test/test_grid_map_cv.cpp
-  #  test/GridMapCvTest.cpp
-  #  test/GridMapCvProcessingTest.cpp
-  #)
-  #target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+  ament_add_gtest(${PROJECT_NAME}-test
+    test/test_grid_map_cv.cpp
+    test/GridMapCvTest.cpp
+    test/GridMapCvProcessingTest.cpp
+  )
+  target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 endif()
 
 ament_package()
