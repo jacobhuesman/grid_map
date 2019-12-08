@@ -11,6 +11,8 @@ Sub-bullets are features that remain to be ported
   - `InpaintFilter` plugin
 
 ### Not started
+To avoid build failures, all `CMakeLists.txt` and `package.xml` files for 
+packages that remain to be ported are marked with a `.old` file extension
 - `grid_map_costmap_2d`
 - `grid_map_demos`
 - `grid_map_filters`
