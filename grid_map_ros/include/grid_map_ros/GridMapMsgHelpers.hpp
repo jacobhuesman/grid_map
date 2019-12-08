@@ -9,10 +9,10 @@
 #pragma once
 
 // ROS
-#include <ros/ros.h>
-#include <std_msgs/UInt32MultiArray.h>
-#include <std_msgs/Float32MultiArray.h>
-#include <std_msgs/Float64MultiArray.h>
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/u_int32_multi_array.hpp>
+#include <std_msgs/msg/float32_multi_array.hpp>
+#include <std_msgs/msg/float64_multi_array.hpp>
 
 // Eigen
 #include <Eigen/Core>
@@ -42,9 +42,10 @@ extern std::map<StorageIndices, std::string> storageIndexNames;
 template<typename MultiArrayMessageType_>
 bool isRowMajor(const MultiArrayMessageType_& message)
 {
+  static const rclcpp::Logger logger = rclcpp::get_logger("grid_map").get_child("isRowMajor");
   if (message.layout.dim[0].label == grid_map::storageIndexNames[grid_map::StorageIndices::Column]) return false;
   else if (message.layout.dim[0].label == grid_map::storageIndexNames[grid_map::StorageIndices::Row]) return true;
-  ROS_ERROR("isRowMajor() failed because layout label is not set correctly.");
+  RCLCPP_ERROR(logger, "failed because layout label is not set correctly.");
   return false;
 }
 
@@ -116,8 +117,9 @@ bool matrixEigenCopyToMultiArrayMessage(const EigenType_& e, MultiArrayMessageTy
 template<typename EigenType_, typename MultiArrayMessageType_>
 bool multiArrayMessageCopyToMatrixEigen(const MultiArrayMessageType_& m, EigenType_& e)
 {
+  static const rclcpp::Logger logger = rclcpp::get_logger("grid_map").get_child("multiArrayMessageCopyToMatrixEigen");
   if (e.IsRowMajor != isRowMajor(m)) {
-    ROS_ERROR("multiArrayMessageToMatrixEigen() failed because the storage order is not compatible.");
+    RCLCPP_ERROR(logger, "failed because the storage order is not compatible.");
     return false;
   }
 
@@ -137,8 +139,9 @@ bool multiArrayMessageCopyToMatrixEigen(const MultiArrayMessageType_& m, EigenTy
 template<typename EigenType_, typename MultiArrayMessageType_>
 bool multiArrayMessageMapToMatrixEigen(MultiArrayMessageType_& m, EigenType_& e)
 {
+  static const rclcpp::Logger logger = rclcpp::get_logger("grid_map").get_child("multiArrayMessageMapToMatrixEigen");
   if (e.IsRowMajor != isRowMajor(m)) {
-    ROS_ERROR("multiArrayMessageToMatrixEigen() failed because the storage order is not compatible.");
+    RCLCPP_ERROR(logger, "multiArrayMessageToMatrixEigen() failed because the storage order is not compatible.");
     return false;
   }
 

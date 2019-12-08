@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(grid_map_cv)
+project(grid_map_ros)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -16,19 +16,28 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 set(${PROJECT_NAME}_dependencies
+  rclcpp
   grid_map_core
+  grid_map_msgs
+  grid_map_cv
+  sensor_msgs
+  nav_msgs
+  std_msgs
+  geometry_msgs
   cv_bridge
-  # filters TODO
+  rosbag2
+  tf2
+  tf2_ros
+  tf2_eigen
+  tf2_geometry_msgs
+  visualization_msgs
 )
 
 find_package(ament_cmake REQUIRED)
-foreach(dependency ${${PROJECT_NAME}_dependencies})
-  find_package(${dependency} REQUIRED)
+foreach(dep ${${PROJECT_NAME}_dependencies})
+  find_package(${dep} REQUIRED)
 endforeach()
 find_package(Eigen3 REQUIRED)
-find_package(OpenCV REQUIRED COMPONENTS
-  opencv_photo
-)
 
 ###########
 ## Build ##
@@ -36,24 +45,22 @@ find_package(OpenCV REQUIRED COMPONENTS
 
 ## Declare a cpp library
 add_library(${PROJECT_NAME}
-  src/GridMapCvProcessing.cpp
-  #src/InpaintFilter.cpp TODO
+  src/GridMapRosConverter.cpp
+  src/GridMapMsgHelpers.cpp
+  src/PolygonRosConverter.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(${PROJECT_NAME}
-  ${OpenCV_LIBRARIES}
+ament_target_dependencies(${PROJECT_NAME} PUBLIC ${${PROJECT_NAME}_dependencies})
+target_link_libraries(${PROJECT_NAME} PUBLIC
   Eigen3::Eigen
 )
-ament_target_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_dependencies})
 
 #############
 ## Install ##
 #############
-
-# Export dependencies
 ament_export_interfaces(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(${${PROJECT_NAME}_dependencies})
 ament_export_include_directories(include)
@@ -75,13 +82,6 @@ install(
   DESTINATION include
 )
 
-# TODO reintegrate filter plugins
-# Mark other files for installation.
-#install(
-#  FILES filter_plugins.xml
-#  DESTINATION share
-#)
-
 #############
 ## Testing ##
 #############
@@ -89,14 +89,10 @@ install(
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-  # TODO add these back
   ## Add gtest based cpp test target and link libraries
   #ament_add_gtest(${PROJECT_NAME}-test
-  #  test/test_grid_map_cv.cpp
-  #  test/GridMapCvTest.cpp
-  #  test/GridMapCvProcessingTest.cpp
+  #  test/test_grid_map_ros.cpp
+  #  test/GridMapRosTest.cpp
   #)
   #target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 endif()
-
-ament_package()

@@ -15,12 +15,10 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-find_package(ament_cmake REQUIRED)
-
 ## Define Eigen addons. 
 include(cmake/${PROJECT_NAME}-extras.cmake)
 
-## System dependencies are found with CMake's conventions
+find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 ###########
@@ -43,16 +41,11 @@ add_library(${PROJECT_NAME}
    src/iterators/LineIterator.cpp
    src/iterators/SlidingWindowIterator.cpp
 )
-
-target_include_directories(${PROJECT_NAME}
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
-
 target_link_libraries(${PROJECT_NAME} Eigen3::Eigen)
-#ament_target_dependencies(${PROJECT_NAME})
-
 
 #############
 ## Install ##
@@ -60,7 +53,6 @@ target_link_libraries(${PROJECT_NAME} Eigen3::Eigen)
 
 # Export dependencies
 ament_export_interfaces(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-#ament_export_dependencies(some_dependency)
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
 

@@ -8,7 +8,7 @@
 #include "grid_map_ros/PolygonRosConverter.hpp"
 
 // ROS
-#include <geometry_msgs/Point32.h>
+#include <geometry_msgs/msg/point32.hpp>
 
 namespace grid_map {
 
@@ -16,13 +16,13 @@ PolygonRosConverter::PolygonRosConverter() {}
 
 PolygonRosConverter::~PolygonRosConverter() {}
 
-void PolygonRosConverter::toMessage(const grid_map::Polygon& polygon, geometry_msgs::PolygonStamped& message)
+void PolygonRosConverter::toMessage(const grid_map::Polygon& polygon, geometry_msgs::msg::PolygonStamped& message)
 {
-  message.header.stamp.fromNSec(polygon.getTimestamp());
+  message.header.stamp = rclcpp::Time(polygon.getTimestamp());
   message.header.frame_id = polygon.getFrameId();
 
   for (const auto& vertex : polygon.getVertices()) {
-    geometry_msgs::Point32 point;
+    geometry_msgs::msg::Point32 point;
     point.x = vertex.x();
     point.y = vertex.y();
     point.z = 0.0;
@@ -30,14 +30,14 @@ void PolygonRosConverter::toMessage(const grid_map::Polygon& polygon, geometry_m
   }
 }
 
-void PolygonRosConverter::toLineMarker(const grid_map::Polygon& polygon, const std_msgs::ColorRGBA& color, const double lineWidth,
-                                       const double zCoordinate, visualization_msgs::Marker& marker)
+void PolygonRosConverter::toLineMarker(const grid_map::Polygon& polygon, const std_msgs::msg::ColorRGBA& color, const double lineWidth,
+                                       const double zCoordinate, visualization_msgs::msg::Marker& marker)
 {
-    marker.header.stamp.fromNSec(polygon.getTimestamp());
+    marker.header.stamp = rclcpp::Time(polygon.getTimestamp());
     marker.header.frame_id = polygon.getFrameId();
-    marker.lifetime = ros::Duration(0.0);
-    marker.action = visualization_msgs::Marker::ADD;
-    marker.type = visualization_msgs::Marker::LINE_STRIP;
+    marker.lifetime = rclcpp::Duration(0.0);
+    marker.action = visualization_msgs::msg::Marker::ADD;
+    marker.type = visualization_msgs::msg::Marker::LINE_STRIP;
     marker.color = color;
     marker.scale.x = lineWidth;
 
@@ -58,14 +58,14 @@ void PolygonRosConverter::toLineMarker(const grid_map::Polygon& polygon, const s
     marker.points[i].z = marker.points[startIndex].z;
 }
 
-void PolygonRosConverter::toTriangleListMarker(const grid_map::Polygon& polygon, const std_msgs::ColorRGBA& color,
-                                               const double zCoordinate, visualization_msgs::Marker& marker)
+void PolygonRosConverter::toTriangleListMarker(const grid_map::Polygon& polygon, const std_msgs::msg::ColorRGBA& color,
+                                               const double zCoordinate, visualization_msgs::msg::Marker& marker)
 {
-  marker.header.stamp.fromNSec(polygon.getTimestamp());
+  marker.header.stamp = rclcpp::Time(polygon.getTimestamp());
   marker.header.frame_id = polygon.getFrameId();
-  marker.lifetime = ros::Duration(0.0);
-  marker.action = visualization_msgs::Marker::ADD;
-  marker.type = visualization_msgs::Marker::TRIANGLE_LIST;
+  marker.lifetime = rclcpp::Duration(0.0);
+  marker.action = visualization_msgs::msg::Marker::ADD;
+  marker.type = visualization_msgs::msg::Marker::TRIANGLE_LIST;
   marker.scale.x = 1.0;
   marker.scale.y = 1.0;
   marker.scale.z = 1.0;
