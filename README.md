@@ -9,6 +9,9 @@
 Sub-bullets are features that remain to be ported
 - `grid_map_cv`
   - `InpaintFilter` plugin
+- `grid_map_ros`
+  - `GridMapRosConverter::saveToBag` - started porting
+  - `GridMapRosConverter::loadFromBag` - started porting
 
 ### Not started
 To avoid build failures, all `CMakeLists.txt` and `package.xml` files for 
@@ -19,7 +22,6 @@ packages that remain to be ported are marked with a `.old` file extension
 - `grid_map_loader`
 - `grid_map_octomap`
 - `grid_map_pcl`
-- `grid_map_ros`
 - `grid_map_rviz_plugin`
 - `grid_map_sdf`
 - `grid_map_visualization`
